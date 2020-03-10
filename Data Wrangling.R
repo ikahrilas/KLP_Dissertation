@@ -7,12 +7,12 @@
 
 #+ read in data
 library(tidyverse)
+library(here)
 #'
 #' Create vector with all mul file names
 #+ vector of all files in working directory
-mul_names <- list.files(pattern = ".mul")
-# preallocate space
-vector("list", length(mul_names))
+mul_names <- list.files(here("Data"), pattern = "mul")
+evt_names <- list.files(here("Data"), pattern = "evt")
 #'
 #' Trials names
 #+ list of trial names
@@ -34,39 +34,22 @@ trial_names <- c("fixation",
                  )
 #' Read in files
 #+ map over all file names
-mul_files <- map_df(mul_names, ~ {
-  read_table2(.x, skip = 1) %>%
+mul_files <- map2_df(mul_names, evt_names, ~ {
+  mul <- read_table2(here("Data", .x), skip = 1) %>%
   mutate(trial = rep(trial_names,
                      each = (nrow(.) / length(trial_names))
-                     )
+                     ),
+         pid = str_extract(.x, "[0-9]{6}"),
+         ms = rep(seq(-200, 1400,
+                      by = ((1600 + (1600 / 400))/ 400)),
+                  times = 15)
          )
+  evt <- read_table(here("Data", .y)) %>%
+    rename("n_trials" = `Code\tTriNo\tComnt`) %>%
+    mutate(n_trials = as.numeric(str_extract(n_trials, pattern = "[0-9]{2,}")),
+           pid = str_extract(.y, "[0-9]{6}")
+    ) %>%
+    select(-Tmu)
+  full_join(mul, evt, by = "pid")
   }
   )
-
-#' 1600 ms
-# this read all .mul files into a list and generates pid, block, and ms variables
-mul_files <- map(mul_names, ~ {
-  read_table2(.x, skip = 1) %>%
-    mutate(
-      pid = as.numeric(str_extract(.x, "[0-9]{7,}")),
-      block = rep(block_order, each = nrow(.) / 7),
-      ms = rep(seq(from = -200, to = 3000,
-                   by = ((3200 + (3200 / (nrow(.)/7))) / (nrow(.)/7))),
-               times = 7) %>%
-    )
-}
-)
-
-mul_tbl <- reduce(mul_files, full_join)
-
-# clean up electrode names in mul_tbl
-names(mul_tbl) <- gsub("_.*", "", names(mul_tbl))
-
-
-
-erp <- full_join(mul_tbl, evt_tbl, by = c("pid", "block"))
-# can also drop x72 and x73 columns, as they don't contain anything!
-erp <- erp %>% select(-c(X74, X73, X72))
-# fix incorrect pid
-erp$pid[erp$pid == 201206832] <- 206201832
-write_csv(erp, "erp_data.csv")
