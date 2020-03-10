@@ -52,26 +52,12 @@ mul_files <- map(mul_names, ~ {
       block = rep(block_order, each = nrow(.) / 7),
       ms = rep(seq(from = -200, to = 3000,
                    by = ((3200 + (3200 / (nrow(.)/7))) / (nrow(.)/7))),
-               times = 7)
+               times = 7) %>%
     )
 }
 )
 
 mul_tbl <- reduce(mul_files, full_join)
-
-glimpse(evt_tbl)
-glimpse(mul_tbl)
-
-# clean up block names
-evt_tbl$block <- str_remove(evt_tbl$block, "42\t200000\t")
-evt_tbl$block <- map_chr(evt_tbl$block, ~ {
-  str_replace_all(.x, "Positive", "Pos") %>%
-    str_replace_all(., "Negative", "Neg") %>%
-    str_replace_all(., "Neutral", "Neu") %>%
-    str_replace_all(., "Increase", "Inc") %>%
-    str_replace_all(., "Decrease", "Dec")
-}
-)
 
 # clean up electrode names in mul_tbl
 names(mul_tbl) <- gsub("_.*", "", names(mul_tbl))
