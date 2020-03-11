@@ -23,7 +23,7 @@ trial_names <- c("fixation",
                  "pure-congruent-CT",
                  "pure-incongruent-CT",
                  "neutral-congruent-CT",
-                 "netural-incongruent-CT",
+                 "neutral-incongruent-CT",
                  "congruent-block-AT",
                  "incongruent-block-AT",
                  "neutral-block-AT",
@@ -32,11 +32,14 @@ trial_names <- c("fixation",
                  "neutral-congruent-AT",
                  "neutral-incongruent-AT"
                  )
+#' define vector of number of total possible trials for each to derive proportion of retained trials for each participant
+#+ total trials vector
+tot_trials <- c(64, 64, 62, 124, 32, 30, 32, 32, 64, 64, 124, 32, 32, 32, 32)
 #' Read in files
 #+ map over all file names
-mul_files <- map2_df(mul_names, evt_names, ~ {
+eeg_dat <- map2_df(mul_names, evt_names, ~ {
   mul <- read_table2(here("Data", .x), skip = 1) %>%
-  mutate(trial = rep(trial_names,
+  mutate(trial_type = rep(trial_names,
                      each = (nrow(.) / length(trial_names))
                      ),
          pid = str_extract(.x, "[0-9]{6}"),
@@ -44,12 +47,14 @@ mul_files <- map2_df(mul_names, evt_names, ~ {
                       by = ((1600 + (1600 / 400))/ 400)),
                   times = 15)
          )
-  evt <- read_table(here("Data", .y)) %>%
-    rename("n_trials" = `Code\tTriNo\tComnt`) %>%
-    mutate(n_trials = as.numeric(str_extract(n_trials, pattern = "[0-9]{2,}")),
-           pid = str_extract(.y, "[0-9]{6}")
-    ) %>%
+  evt <- read_table(here("Data", evt_names)) %>%
+    separate(`Code\tTriNo\tComnt`, into = c("trial_type", "n_trials"), sep = ":") %>%
+    mutate(trial_type = str_extract(trial_type, trial_names),
+           n_trials = as.numeric(str_extract(n_trials, "[0-9]{2}")),
+           pid = str_extract(evt_names, "[0-9]{6}"),
+           total_trials = tot_trials,
+           prop_trials = n_trials / tot_trials) %>%
     select(-Tmu)
-  full_join(mul, evt, by = "pid")
+  full_join(mul, evt, by = c("pid", "trial_type"))
   }
   )
