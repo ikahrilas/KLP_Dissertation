@@ -11,8 +11,8 @@ library(here)
 #'
 #' Create vector with all mul file names
 #+ vector of all files in working directory
-mul_names <- list.files(here("Data"), pattern = "mul")
-evt_names <- list.files(here("Data"), pattern = "evt")
+mul_names <- list.files(here("Data", "ERP"), pattern = "mul")
+evt_names <- list.files(here("Data", "EVT"), pattern = "evt")
 #'
 #' Trials names
 #+ list of trial names
@@ -37,8 +37,9 @@ trial_names <- c("fixation",
 tot_trials <- c(64, 64, 62, 124, 32, 30, 32, 32, 64, 64, 124, 32, 32, 32, 32)
 #' Read in files
 #+ map over all file names
-eeg_dat <- map2_df(mul_names, evt_names, ~ {
-  mul <- read_table2(here("Data", .x), skip = 1) %>%
+
+eeg_df <- map2_df(mul_names, evt_names, ~ {
+  mul <- read_table2(here("Data", "ERP", .x), skip = 1) %>%
   mutate(trial_type = rep(trial_names,
                      each = (nrow(.) / length(trial_names))
                      ),
@@ -46,15 +47,18 @@ eeg_dat <- map2_df(mul_names, evt_names, ~ {
          ms = rep(seq(-200, 1400,
                       by = ((1600 + (1600 / 400))/ 400)),
                   times = 15)
-         )
-  evt <- read_table(here("Data", evt_names)) %>%
+        )
+  evt <- read_table(here("Data", "EVT", .y)) %>%
     separate(`Code\tTriNo\tComnt`, into = c("trial_type", "n_trials"), sep = ":") %>%
     mutate(trial_type = str_extract(trial_type, trial_names),
            n_trials = as.numeric(str_extract(n_trials, "[0-9]{2}")),
-           pid = str_extract(evt_names, "[0-9]{6}"),
+           pid = str_extract(.y, "[0-9]{6}"),
            total_trials = tot_trials,
            prop_trials = n_trials / tot_trials) %>%
     select(-Tmu)
   full_join(mul, evt, by = c("pid", "trial_type"))
-  }
-  )
+}
+)
+
+
+
