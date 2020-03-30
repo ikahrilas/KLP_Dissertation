@@ -60,5 +60,7 @@ eeg_df <- map2_df(mul_names, evt_names, ~ {
 }
 )
 
-
+eeg_df <- eeg_df %>%
+  mutate(EEG59_avr = coalesce(eeg_df$EEG59_avr, eeg_df$"M1'_avr")) %>%
+  select(-"M1'_avr")
 
