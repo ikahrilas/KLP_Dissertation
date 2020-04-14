@@ -43,7 +43,8 @@ eeg_df %>%
         legend.title = element_text(size = 16),
         legend.text = element_text(size = 12),
         legend.key.size = unit(2, "line"),
-        plot.title = element_text(hjust = 0.5))+
+        plot.title = element_text(hjust = 0.5),
+        title = element_text(size = 16))+
   scale_color_discrete(name = "Trial Type")
 }
 # iterate and plot
@@ -60,3 +61,7 @@ plots <- pmap(list(cluster = list(N200_elec,
                 472,
                 900)),
      .f = erp_plot_fun)
+# save the images
+map2(plots, c("N200", "N450", "SP"), ~{
+  ggsave(plot = .x, filename = here("Images", .y), device = "png", width = 8, height = 5, scale = 1.5)
+})
