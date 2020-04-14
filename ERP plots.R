@@ -63,5 +63,5 @@ plots <- pmap(list(cluster = list(N200_elec,
      .f = erp_plot_fun)
 # save the images
 map2(plots, c("N200", "N450", "SP"), ~{
-  ggsave(plot = .x, filename = here("Images", .y), device = "png", width = 8, height = 5, scale = 1.5)
+  ggsave(plot = .x, filename = here("Images", paste0(.y, ".png")), device = "png", width = 8, height = 5, scale = 1.5)
 })
