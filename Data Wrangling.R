@@ -2,7 +2,7 @@
 #' title: "Data Wrangling"
 #' author: "Ian J. Kahrilas"
 #' date: "2020/4/14"
-#' output: "pdf_document"
+#' output: "html_document"
 #' ---
 #+ read in data
 library(tidyverse)
@@ -64,3 +64,15 @@ eeg_df <- map2_df(mul_names, evt_names, ~ {
 eeg_df <- eeg_df %>%
   mutate(EEG59_avr = coalesce(eeg_df$EEG59_avr, eeg_df$"M1'_avr")) %>%
   select(-"M1'_avr")
+
+names(eeg_df) <- c("EXG1",
+                  "EXG2",
+                   paste0("EEG", 1:59),
+                  "trial_type",
+                  "pid",
+                  "ms",
+                  "n_trials",
+                  "total_trials",
+                  "prop_trials")
+
+write_csv(eeg_df, "Data/created_data/eeg_dat.csv")
