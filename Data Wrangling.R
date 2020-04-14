@@ -1,10 +1,9 @@
 #' ---
 #' title: "Data Wrangling"
 #' author: "Ian J. Kahrilas"
-#' date: "2020/3/10"
+#' date: "2020/4/14"
 #' output: "pdf_document"
 #' ---
-
 #+ read in data
 library(tidyverse)
 library(here)
@@ -37,7 +36,9 @@ trial_names <- c("fixation",
 tot_trials <- c(64, 64, 62, 124, 32, 30, 32, 32, 64, 64, 124, 32, 32, 32, 32)
 #' Read in files
 #+ map over all file names
-
+# preallocate space
+eeg_df <- as_tibble(matrix(data = NA_real_, nrow = 648000, ncol = 67))
+# read in data
 eeg_df <- map2_df(mul_names, evt_names, ~ {
   mul <- read_table2(here("Data", "ERP", .x), skip = 1) %>%
   mutate(trial_type = rep(trial_names,
@@ -63,4 +64,3 @@ eeg_df <- map2_df(mul_names, evt_names, ~ {
 eeg_df <- eeg_df %>%
   mutate(EEG59_avr = coalesce(eeg_df$EEG59_avr, eeg_df$"M1'_avr")) %>%
   select(-"M1'_avr")
-
