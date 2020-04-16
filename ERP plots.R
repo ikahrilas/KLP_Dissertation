@@ -50,7 +50,9 @@ eeg_df %>%
                           breaks = c("pure-incongruent-CT", "pure-congruent-CT"),
                           labels = c("Incongruent", "Congruent"))
 }
-# iterate and plot
+#'
+#' Use pmap to iterate plotting function over list of parameters.
+#+ iterate and plot
 plots <- pmap(list(cluster = list(N200_elec,
                 N450_elec,
                 SP_elec),
@@ -64,7 +66,9 @@ plots <- pmap(list(cluster = list(N200_elec,
                 472,
                 900)),
      .f = erp_plot_fun)
-# save the images
+#'
+#' save images to workspace
+#+ save the images
 map2(plots, c("N200", "N450", "SP"), ~{
   ggsave(plot = .x, filename = here("Images", paste0(.y, ".png")), device = "png", width = 8, height = 5, scale = 1.5)
 })
