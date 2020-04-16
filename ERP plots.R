@@ -17,7 +17,7 @@ eeg_df <- read_csv(here("Data", "created_data", "eeg_dat.csv"))
 #+ electrode clusters and time windows
 # clusters
 N200_elec <- paste0("EEG", c(52, 53, 54, 58))
-N450_elec <- paste0("EEG", c(58, 56, 48, 36, 55, 47, 35, 57, 49, 37))
+N450_elec <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37))
 SP_elec <- paste0("EEG", c(20, 34, 47, 48, 36, 49, 37))
 #'
 #' Create plots for each component with all conditions
@@ -25,11 +25,12 @@ SP_elec <- paste0("EEG", c(20, 34, 47, 48, 36, 49, 37))
 erp_plot_fun <- function(cluster, comp_name, time_window_low, time_window_high) {
 eeg_df %>%
   select(all_of(cluster),  trial_type:prop_trials) %>%
+  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT")) %>%
   pivot_longer(., cols = cluster, names_to = "electrode", values_to = "mv") %>%
   mutate(ms = round(ms, digits = -0.8)) %>%
   group_by(trial_type, ms) %>%
   summarize(mv = mean(mv, na.rm = TRUE)) %>%
-  ggplot(., aes(ms, mv, color = trial_type)) +
+  ggplot(., aes(ms, mv, linetype = trial_type)) +
   geom_line(size = 1.1) +
   geom_vline(xintercept = 0, linetype = "dashed") +
   geom_vline(xintercept = c(time_window_low, time_window_high), linetype = "solid", size = 1.05) +
@@ -45,7 +46,9 @@ eeg_df %>%
         legend.key.size = unit(2, "line"),
         plot.title = element_text(hjust = 0.5),
         title = element_text(size = 16))+
-  scale_color_discrete(name = "Trial Type")
+  scale_linetype_discrete(name = "Trial Type",
+                          breaks = c("pure-incongruent-CT", "pure-congruent-CT"),
+                          labels = c("Incongruent", "Congruent"))
 }
 # iterate and plot
 plots <- pmap(list(cluster = list(N200_elec,
