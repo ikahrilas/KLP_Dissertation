@@ -44,7 +44,7 @@ full_df %>%
   mutate(ms = round(ms, digits = -0.8)) %>%
   group_by(TRIOGroup, trial_type, ms) %>%
   summarize(mv = mean(mv, na.rm = TRUE)) %>%
-  ggplot(., aes(ms, mv, linetype = trial_type)) +
+  ggplot(., aes(ms, mv, linetype = trial_type, color = TRIOGroup)) +
   geom_line(size = 1.1) +
   geom_vline(xintercept = 0, linetype = "dashed") +
   geom_vline(xintercept = c(time_window_low, time_window_high), linetype = "solid", size = 1.05) +
@@ -63,8 +63,7 @@ full_df %>%
   scale_linetype_discrete(name = "Trial Type",
                           breaks = c("pure-incongruent-CT", "pure-congruent-CT"),
                           labels = c("Incongruent", "Congruent")) +
-    facet_grid(TRIOGroup ~ .) +
-    theme(strip.text = element_text(size = 14))
+  scale_color_discrete(name = "Group")
 }
 #'
 #' Use pmap to iterate plotting function over list of parameters.
@@ -86,5 +85,5 @@ plots <- pmap(list(cluster = list(N200_elec,
 #' save images to workspace
 #+ save the images
 map2(plots, c("N200", "N450", "SP"), ~{
-  ggsave(plot = .x, filename = here("Images", paste0(.y, ".png")), device = "png", width = 7, height = 8, scale = 1.5)
+  ggsave(plot = .x, filename = here("Images", paste0(.y, ".png")), device = "png", width = 8, height = 5, scale = 1.5)
 })
