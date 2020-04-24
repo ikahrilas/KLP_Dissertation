@@ -41,7 +41,6 @@ full_df %>%
   select(all_of(cluster),  trial_type:prop_trials, TRIOGroup) %>%
   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT")) %>%
   pivot_longer(., cols = cluster, names_to = "electrode", values_to = "mv") %>%
-  mutate(ms = round(ms, digits = -0.8)) %>%
   group_by(TRIOGroup, trial_type, ms) %>%
   summarize(mv = mean(mv, na.rm = TRUE)) %>%
   ggplot(., aes(ms, mv, linetype = trial_type, color = TRIOGroup)) +
