@@ -38,14 +38,16 @@ N200 <- eeg_df %>%
          between(ms, 220, 360)) %>%
   pivot_longer(., cols = all_of(N200_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
-  summarize(N200 = mean(mv, na.rm = TRUE))
+  summarize(N200_mean = mean(mv, na.rm = TRUE),
+            N200_centroid_latency = sum(ms * (mv - min(mv))) / sum(mv - min(mv)))
 N450 <- eeg_df %>%
   select(all_of(N450_elec),  trial_type:prop_trials) %>%
   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"),
          between(ms, 360, 472)) %>%
   pivot_longer(., cols = all_of(N450_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
-  summarize(N450 = mean(mv, na.rm = TRUE))
+  summarize(N450 = mean(mv, na.rm = TRUE),
+            N450_centroid_latency = sum(ms * (mv - min(mv)), na.rm = TRUE) / sum(mv - min(mv)), na.rm = TRUE)
 SP <- eeg_df %>%
   select(all_of(SP_elec),  trial_type:prop_trials) %>%
   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"),
