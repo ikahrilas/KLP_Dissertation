@@ -69,8 +69,3 @@ glimpse(full_df)
 #' Write file
 #+ save spss file
 write_sav(full_df, here("Data", "ESCW Data_PolnaszekDissertation_EEG.sav"))
-
-eeg_df_test <- eeg_df %>%
-  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"))
-
-summary(eeg_df_test$prop_trials)
