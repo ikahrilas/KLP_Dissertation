@@ -39,7 +39,10 @@ N200 <- eeg_df %>%
   pivot_longer(., cols = all_of(N200_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
   summarize(N200_mean = mean(mv, na.rm = TRUE),
-            N200_centroid_latency = sum(ms * (mv - min(mv))) / sum(mv - min(mv)))
+            N200_centroid_latency = sum(ms * (mv - min(mv))) / sum(mv - min(mv)),
+            n_trials = mean(n_trials),
+            total_trials = mean(total_trials),
+            prop_trials = mean(prop_trials))
 N450 <- eeg_df %>%
   select(all_of(N450_elec),  trial_type:prop_trials) %>%
   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"),
@@ -66,3 +69,8 @@ glimpse(full_df)
 #' Write file
 #+ save spss file
 write_sav(full_df, here("Data", "ESCW Data_PolnaszekDissertation_EEG.sav"))
+
+eeg_df_test <- eeg_df %>%
+  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"))
+
+summary(eeg_df_test$prop_trials)
