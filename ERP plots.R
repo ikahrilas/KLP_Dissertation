@@ -95,16 +95,3 @@ plots <- pmap(list(cluster = list(N200_elec,
 map2(plots, c("N200", "N450", "SP"), ~{
   ggsave(plot = .x, filename = here("Images", paste0(.y, ".png")), device = "png", width = 8, height = 5, scale = 1.5)
 })
-
-
-# testing
-test <- full_df %>%
-  select(all_of(N200_elec),  trial_type:prop_trials, TRIOGroup) %>%
-  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT")) %>%
-  pivot_longer(., cols = N200_elec, names_to = "electrode", values_to = "mv") %>%
-  filter(ms < 0) %>%
-  group_by(pid, trial_type, electrode) %>%
-  summarize(baseline = mean(mv, na.rm = TRUE))
-
-
-test
