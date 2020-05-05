@@ -37,19 +37,19 @@ full_df <- full_join(eeg_df, ques_data, by = c("pid" = "SubNum"))
 #' Create plots for each component with all conditions
 #+ plot creation
 erp_plot_fun <- function(cluster, comp_name, time_window_low, time_window_high) {
-baseline <- full_df %>%
-  select(all_of(cluster),  trial_type:prop_trials, TRIOGroup) %>%
-  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT")) %>%
-  pivot_longer(., cols = all_of(cluster), names_to = "electrode", values_to = "mv") %>%
-  filter(ms < 0) %>%
-  group_by(pid, trial_type, electrode) %>%
-  summarize(baseline = mean(mv, na.rm = TRUE))
+# baseline <- full_df %>%
+#   select(all_of(cluster),  trial_type:prop_trials, TRIOGroup) %>%
+#   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT")) %>%
+#   pivot_longer(., cols = all_of(cluster), names_to = "electrode", values_to = "mv") %>%
+#   filter(ms < 0) %>%
+#   group_by(pid, trial_type, electrode) %>%
+#   summarize(baseline = mean(mv, na.rm = TRUE))
 full_df %>%
   select(all_of(cluster),  trial_type:prop_trials, TRIOGroup) %>%
   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT")) %>%
   pivot_longer(., cols = cluster, names_to = "electrode", values_to = "mv") %>%
-  full_join(., baseline, by = c("pid", "trial_type", "electrode")) %>%
-  mutate(mv = mv - baseline) %>%
+  # full_join(., baseline, by = c("pid", "trial_type", "electrode")) %>%
+  # mutate(mv = mv - baseline) %>%
   group_by(TRIOGroup, trial_type, ms) %>%
   summarize(mv = mean(mv, na.rm = TRUE)) %>%
   ggplot(., aes(ms, mv, linetype = trial_type, color = TRIOGroup)) +
