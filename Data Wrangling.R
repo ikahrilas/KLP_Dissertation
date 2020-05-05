@@ -10,8 +10,8 @@ library(here)
 #'
 #' Create vector with all mul file names
 #+ vector of all files in working directory
-mul_names <- list.files(here("Data", "ERP"), pattern = "mul")
-evt_names <- list.files(here("Data", "EVT"), pattern = "evt")
+mul_names <- list.files(here("Data", "Batch_Export_2020_5_5", "erp"), pattern = "mul")
+evt_names <- list.files(here("Data", "Batch_Export_2020_5_5", "evt"), pattern = "evt")
 #'
 #' Trials names
 #+ list of trial names
@@ -40,7 +40,7 @@ tot_trials <- c(64, 64, 62, 124, 32, 30, 32, 32, 64, 64, 124, 32, 32, 32, 32)
 eeg_df <- as_tibble(matrix(data = NA_real_, nrow = 648000, ncol = 67))
 # read in data
 eeg_df <- map2_df(mul_names, evt_names, ~ {
-  mul <- read_table2(here("Data", "ERP", .x), skip = 1) %>%
+  mul <- read_table2(here("Data", "Batch_Export_2020_5_5", "erp", .x), skip = 1) %>%
   mutate(trial_type = rep(trial_names,
                      each = (nrow(.) / length(trial_names))
                      ),
@@ -49,7 +49,7 @@ eeg_df <- map2_df(mul_names, evt_names, ~ {
                       by = ((1600 + (1600 / 400))/ 400)),
                   times = 15)
         )
-  evt <- read_table(here("Data", "EVT", .y)) %>%
+  evt <- read_table(here("Data", "Batch_Export_2020_5_5", "evt", .y)) %>%
     separate(`Code\tTriNo\tComnt`, into = c("trial_type", "n_trials"), sep = ":") %>%
     mutate(trial_type = str_extract(trial_type, trial_names),
            n_trials = as.numeric(str_extract(n_trials, "[0-9]{2}")),
