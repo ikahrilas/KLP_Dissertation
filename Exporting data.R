@@ -47,7 +47,7 @@ N200 <- eeg_df %>%
   pivot_longer(., cols = all_of(N200_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
   summarize(N200_mean = mean(mv, na.rm = TRUE),
-            N200_centroid_latency = sum(ms * (mv - min(mv))) / sum(mv - min(mv)),
+            N200_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE),
             n_trials = mean(n_trials),
             total_trials = mean(total_trials),
             prop_trials = mean(prop_trials))
