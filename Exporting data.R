@@ -59,7 +59,7 @@ N450 <- eeg_df %>%
   pivot_longer(., cols = all_of(N450_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
   summarize(N450 = mean(mv, na.rm = TRUE),
-            N450_centroid_latency = sum(ms * (mv - min(mv)), na.rm = TRUE) / sum(mv - min(mv)), na.rm = TRUE)
+            N450_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
 
 SP <- eeg_df %>%
   select(all_of(SP_elec),  trial_type:prop_trials) %>%
