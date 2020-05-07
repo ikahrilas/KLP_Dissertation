@@ -73,7 +73,8 @@ full_df %>%
   scale_linetype_discrete(name = "Trial Type",
                           breaks = c("pure-incongruent-CT", "pure-congruent-CT"),
                           labels = c("Incongruent", "Congruent")) +
-  scale_color_discrete(name = "Group")
+  scale_color_manual(name = "Group", values = c("green", "blue", "red"))
+  # scale_color_viridis_d(name = "Group") # for color-blind friendly pallette
 }
 #'
 #' Use pmap to iterate plotting function over list of parameters.
