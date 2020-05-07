@@ -60,7 +60,7 @@ N200_rev <- eeg_df %>%
          between(ms, 360, 472)) %>%
   pivot_longer(., cols = all_of(N200_elec_revised), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
-  summarize(N200_revised = mean(mv, na.rm = TRUE),
+  summarize(N200_revised_mean = mean(mv, na.rm = TRUE),
             N200_revised_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
 
 N450 <- eeg_df %>%
@@ -69,7 +69,7 @@ N450 <- eeg_df %>%
          between(ms, 360, 472)) %>%
   pivot_longer(., cols = all_of(N450_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
-  summarize(N450 = mean(mv, na.rm = TRUE),
+  summarize(N450_mean = mean(mv, na.rm = TRUE),
             N450_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
 
 N450_rev <- eeg_df %>%
@@ -78,7 +78,7 @@ N450_rev <- eeg_df %>%
          between(ms, 360, 472)) %>%
   pivot_longer(., cols = all_of(N450_elec_revised), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
-  summarize(N450_revised = mean(mv, na.rm = TRUE),
+  summarize(N450_revised_mean = mean(mv, na.rm = TRUE),
             N450_revised_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
 
 SP <- eeg_df %>%
@@ -87,7 +87,7 @@ SP <- eeg_df %>%
          between(ms, 600, 900)) %>%
   pivot_longer(., cols = all_of(SP_elec), names_to = "electrode", values_to = "mv") %>%
   group_by(pid, trial_type) %>%
-  summarize(SP = mean(mv, na.rm = TRUE))
+  summarize(SP_mean = mean(mv, na.rm = TRUE))
 #'
 #' Merge all data
 #+
@@ -95,7 +95,11 @@ full_df <- left_join(N200, N200_rev, by = c("pid", "trial_type")) %>%
   left_join(., N450, by = c("pid", "trial_type")) %>%
   left_join(., N450_rev, by = c("pid", "trial_type")) %>%
   left_join(., SP, by = c("pid", "trial_type")) %>%
-  full_join(., ques_data, by = c("pid" = "SubNum"))
+  full_join(., ques_data, by = c("pid" = "SubNum")) %>%
+  select(pid, Age, Race, SEX, trial_type, TRIOGroup, N200_mean,
+         N200_revised_mean, N200_centroid_latency, N200_revised_centroid_latency,
+         N450_mean, N450_revised_mean, N450_centroid_latency, N450_revised_centroid_latency,
+         SP_mean, everything())
 glimpse(full_df)
 #'
 #' Write file
