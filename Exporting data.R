@@ -27,7 +27,9 @@ levels(ques_data$TRIOGroup) <- c("Control", "Worry", "Anxious Arousal")
 #' Define strings for electrode selection
 #+ electrode selections
 N200_elec <- paste0("EEG", c(52, 53, 54, 58))
-N450_elec <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37))
+N200_elec_revised <- paste0("EEG", c(52, 53, 54))
+N450_elec <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37, 58))
+N450_elec_revised <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37))
 SP_elec <- paste0("EEG", c(20, 34, 47, 48, 36, 49, 37))
 #'
 #' Create separate dataframes for each component
@@ -52,6 +54,15 @@ N200 <- eeg_df %>%
             total_trials = mean(total_trials),
             prop_trials = mean(prop_trials))
 
+N200_rev <- eeg_df %>%
+  select(all_of(N200_elec_revised),  trial_type:prop_trials) %>%
+  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"),
+         between(ms, 360, 472)) %>%
+  pivot_longer(., cols = all_of(N200_elec_revised), names_to = "electrode", values_to = "mv") %>%
+  group_by(pid, trial_type) %>%
+  summarize(N200_revised = mean(mv, na.rm = TRUE),
+            N200_revised_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
+
 N450 <- eeg_df %>%
   select(all_of(N450_elec),  trial_type:prop_trials) %>%
   filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"),
@@ -60,6 +71,15 @@ N450 <- eeg_df %>%
   group_by(pid, trial_type) %>%
   summarize(N450 = mean(mv, na.rm = TRUE),
             N450_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
+
+N450_rev <- eeg_df %>%
+  select(all_of(N450_elec_revised),  trial_type:prop_trials) %>%
+  filter(trial_type %in% c("pure-incongruent-CT", "pure-congruent-CT"),
+         between(ms, 360, 472)) %>%
+  pivot_longer(., cols = all_of(N450_elec_revised), names_to = "electrode", values_to = "mv") %>%
+  group_by(pid, trial_type) %>%
+  summarize(N450_revised = mean(mv, na.rm = TRUE),
+            N450_revised_centroid_latency = sum(ms * (mv - min(mv, na.rm = TRUE)), na.rm = TRUE) / sum(mv - min(mv, na.rm = TRUE), na.rm = TRUE))
 
 SP <- eeg_df %>%
   select(all_of(SP_elec),  trial_type:prop_trials) %>%
@@ -71,7 +91,9 @@ SP <- eeg_df %>%
 #'
 #' Merge all data
 #+
-full_df <- left_join(N200, N450, by = c("pid", "trial_type")) %>%
+full_df <- left_join(N200, N200_rev, by = c("pid", "trial_type")) %>%
+  left_join(., N450, by = c("pid", "trial_type")) %>%
+  left_join(., N450_rev, by = c("pid", "trial_type")) %>%
   left_join(., SP, by = c("pid", "trial_type")) %>%
   full_join(., ques_data, by = c("pid" = "SubNum"))
 glimpse(full_df)
