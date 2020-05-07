@@ -91,6 +91,8 @@ SP <- eeg_df %>%
 #'
 #' Merge all data
 #+
+cases_to_omit <- c("006", "007", "029", "037", "039", "049", "051", "059", "061", "105", "213", "227", "232", "233", "246", "262", "304", "305", "309")
+
 full_df <- left_join(N200, N200_rev, by = c("pid", "trial_type")) %>%
   left_join(., N450, by = c("pid", "trial_type")) %>%
   left_join(., N450_rev, by = c("pid", "trial_type")) %>%
@@ -99,7 +101,8 @@ full_df <- left_join(N200, N200_rev, by = c("pid", "trial_type")) %>%
   select(pid, Age, Race, SEX, trial_type, TRIOGroup, N200_mean,
          N200_revised_mean, N200_centroid_latency, N200_revised_centroid_latency,
          N450_mean, N450_revised_mean, N450_centroid_latency, N450_revised_centroid_latency,
-         SP_mean, everything())
+         SP_mean, everything()) %>%
+  filter(!(pid %in% cases_to_omit))
 glimpse(full_df)
 #'
 #' Write file
