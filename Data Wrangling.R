@@ -75,4 +75,12 @@ names(eeg_df) <- c("EXG1",
                   "total_trials",
                   "prop_trials")
 
+cases_to_omit <- c("338006", "316029", "378037", "386039", "351049",
+                   "378051", "344059", "366061", "341105", "547213",
+                   "545232", "545233", "528246", "526240", "548304",
+                   "532305", "512309")
+
+eeg_df <- eeg_df %>%
+            filter(!(pid %in% cases_to_omit))
+
 write_csv(eeg_df, "Data/created_data/eeg_dat.csv")
