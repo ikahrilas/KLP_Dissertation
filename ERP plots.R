@@ -18,7 +18,9 @@ eeg_df <- read_csv(here("Data", "created_data", "eeg_dat.csv"))
 #+ electrode clusters and time windows
 # clusters
 N200_elec <- paste0("EEG", c(52, 53, 54, 58))
-N450_elec <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37))
+N200_elec_revised <- paste0("EEG", c(52, 53, 54))
+N450_elec <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37, 58))
+N450_elec_revised <- paste0("EEG", c(56, 48, 36, 55, 47, 35, 57, 49, 37))
 SP_elec <- paste0("EEG", c(20, 34, 47, 48, 36, 49, 37))
 #'
 #' read in questionnaire data and merge with eeg data
@@ -77,21 +79,29 @@ full_df %>%
 #' Use pmap to iterate plotting function over list of parameters.
 #+ iterate and plot
 plots <- pmap(list(cluster = list(N200_elec,
+                N200_elec_revised,
                 N450_elec,
+                N450_elec_revised,
                 SP_elec),
           comp_name = c("N200",
+                "N200 Revised",
                 "N450",
+                "N450 Revised",
                 "SP"),
           time_window_low = c(220,
+                220,
+                360,
                 360,
                 600),
           time_window_high = c(320,
+                320,
+                472,
                 472,
                 900)),
      .f = erp_plot_fun)
 #'
 #' save images to workspace
 #+ save the images
-map2(plots, c("N200", "N450", "SP"), ~{
+map2(plots, c("N200", "N200 revised", "N450", "N450 revised", "SP"), ~{
   ggsave(plot = .x, filename = here("Images", paste0(.y, ".png")), device = "png", width = 8, height = 5, scale = 1.5)
 })
