@@ -108,3 +108,6 @@ glimpse(full_df)
 #' Write file
 #+ save spss file
 write_sav(full_df, here("Data", "ESCW Data_PolnaszekDissertation_EEG.sav"))
+# save to workspace
+write_csv(full_df, here("Data", "created_data", "full_dat.csv"))
+
