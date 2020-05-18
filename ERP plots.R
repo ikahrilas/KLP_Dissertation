@@ -72,7 +72,8 @@ full_df %>%
                           breaks = c("pure-incongruent-CT", "pure-congruent-CT"),
                           labels = c("Incongruent", "Congruent")) +
   # scale_color_manual(name = "Group", values = c("green", "blue", "red"))
-  scale_color_viridis_d(name = "Group") # for color-blind friendly pallette
+  scale_color_viridis_d(name = "Group") +
+  ylim(-3, 6)
 }
 #'
 #' Use pmap to iterate plotting function over list of parameters.
