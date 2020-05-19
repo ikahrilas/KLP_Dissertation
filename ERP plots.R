@@ -72,7 +72,10 @@ full_df %>%
                           breaks = c("pure-incongruent-CT", "pure-congruent-CT"),
                           labels = c("Incongruent", "Congruent")) +
   # scale_color_manual(name = "Group", values = c("green", "blue", "red"))
-  scale_color_viridis_d(name = "Group") +
+  scale_color_viridis_d(name = "Group",
+                        labels = c("Control",
+                                   "Apprehension",
+                                   "Anxious Arousal")) +
   ylim(-3, 6)
 }
 #'
